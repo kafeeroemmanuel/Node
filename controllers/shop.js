@@ -2,36 +2,41 @@ const Product = require("../models/product"); //Import model obj, begins with ca
 const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "All Products",
-      path: "/products",
-    });
-  });
-  //to render a templating engine, we use render method and since its already set as a default in app.js, no need to add .pug at the end
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        pageTitle: "All Products",
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
-    res.render("shop/product-detail", {
-      product: product,
-      pageTitle: "Ema's product details",
-      path: "/products",
-    });
-  });
+  Product.findById(prodId)
+    .then(([product]) => {
+      res.render("shop/product-detail", {
+        product: product[0],
+        pageTitle: "Ema's product details",
+        path: "/products",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 //starting page
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/index", {
-      prods: products,
-      pageTitle: "Ema shop",
-      path: "/",
-    });
-  });
+  Product.fetchAll()
+    .then(([rows]) => {
+      res.render("shop/index", {
+        prods: rows,
+        pageTitle: "Ema shop",
+        path: "/",
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getCart = (req, res, next) => {
