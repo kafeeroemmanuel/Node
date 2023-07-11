@@ -1,0 +1,48 @@
+.pdt-form {
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
+}
+.form-ctl label,
+.form-ctl input {
+  display: block;
+  width: 100%;
+}
+.form-ctl input {
+  border: 1px solid rgb(11, 173, 11);
+  font: inherit;
+  border-radius: 3px;
+  margin-bottom: 0.5rem;
+}
+button {
+  border: 1px solid blue;
+  cursor: pointer;
+  background: white;
+  padding: 0.3rem;
+}
+button:active,
+button:hover {
+  color: rgb(213, 198, 29);
+}
+
+.product-item {
+  width: 20rem;
+  max-width: 55%;
+  margin: 1rem;
+}
+
+.product__title {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.product__price {
+  text-align: center;
+  color: #4d4d4d;
+  margin-bottom: 0.5rem;
+}
+
+.product__description {
+  text-align: center;
+}

@@ -1,0 +1,23 @@
+//- indentation matters in pug
+//- using layouts and extends as a reusable component
+
+extends layouts/main-layout.pug
+
+
+block content  
+    main
+         if prods.length > 0
+          .grid 
+             each product in prods
+              article.card.product-item 
+                header.card__header 
+                  h1.product__title #{product.title}
+                div.card__image 
+                  img(src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbXCpiYKfm11YUjU715AE4xto0XO6fzBiL8Q&usqp=CAU", alt="Mountains")
+                div.card__content
+                  h2.product__price $19.99
+                  p.product__description A very interesting book so many more
+                .card__actions 
+                  buttons.btn Add to Cart
+         else 
+           h1 No products here 
