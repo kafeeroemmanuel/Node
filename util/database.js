@@ -21,3 +21,5 @@ const sequelize = new Sequelize("node-complete", "root", "#Mbatudde", {
 });
 
 module.exports = sequelize;
+
+//mongodb password = JW2t6jvLnXcNCbaT

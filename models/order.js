@@ -2,14 +2,15 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = require("../util/database");
 
-// a cart belongs to one user but might have multuple pdts
-const Cart = sequelize.define("cart", {
+// a Order(in-btn table btn user and many pdts)
+const Order = sequelize.define("order", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
+  // cd have an address OF THE USER
 });
 
-module.exports = Cart;
+module.exports = Order;

@@ -24,6 +24,10 @@ app.set("views", "views");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public"))); //using static method on express to get into the public folder and access files like css, images etc
@@ -47,6 +51,13 @@ app.use(productsController.get404);
 //creating an association, relating our models
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // A user created this product, (optional)ondeleting user any related pdt will be deleted
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User); // one-direction is enough, this line isn't necessary
+Cart.belongsToMany(Product, { through: CartItem }); // tells sequelize where the connections will be stored.
+Product.belongsToMany(Cart, { through: CartItem });
+Order.belongsTo(User);
+User.hasMany(Order); // A user can have mny orders
+Order.belongsToMany(Product, { through: OrderItem });
 
 sequelize
   //.sync({ force: true })
@@ -62,7 +73,9 @@ sequelize
     return user;
   })
   .then((user) => {
-    //console.log(user);
+    return user.createCart();
+  })
+  .then((cart) => {
     app.listen(3000);
   })
   .catch((err) => {
