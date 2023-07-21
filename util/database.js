@@ -13,7 +13,8 @@
 
 // //dive into official docs to learn more about mysql
 
-const Sequelize = require("sequelize");
+//const Sequelize = require("sequelize");
+const { Sequelize } = require("sequelize"); // control + space to bring up methods
 
 const sequelize = new Sequelize("node-complete", "root", "#Mbatudde", {
   dialect: "mysql",
@@ -21,3 +22,5 @@ const sequelize = new Sequelize("node-complete", "root", "#Mbatudde", {
 });
 
 module.exports = sequelize;
+
+//mongodb password = JW2t6jvLnXcNCbaT

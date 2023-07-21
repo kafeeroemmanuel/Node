@@ -11,8 +11,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express(); //calls the express function and now i can use it
+const Product = require("./models/product");
+const User = require("./models/user");
 
-//const db = require("./util/database");
+const sequelize = require("./util/database");
 
 const productsController = require("./controllers/error");
 
@@ -20,20 +22,25 @@ const productsController = require("./controllers/error");
 app.set("view engine", "ejs");
 app.set("views", "views");
 
-// db.execute("SELECT * FROM products")
-//   .then((result) => {
-//     console.log(result);
-//     //console.log(result[0] );
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
+const Order = require("./models/order");
+const OrderItem = require("./models/order-item");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public"))); //using static method on express to get into the public folder and access files like css, images etc
+
+app.use((req, res, next) => {
+  // register middleware for upcoming requests
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user; // storing a user in the req, add a new field to our existing request. the user is a sequelized obj with db methods
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 //starting route
 app.use("/admin", adminRoutes);
@@ -41,9 +48,36 @@ app.use(shopRoutes);
 
 app.use(productsController.get404);
 
-// app.use((req, res) => {
-//   res.render("404", { pageTitle: "Error Page" });
-//   res.status(404).sendFile(path.join(__dirname, "views", "404.html")); //adding an error page, no '../' since we are already in the project folder
-// });
+//creating an association, relating our models
+Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // A user created this product, (optional)ondeleting user any related pdt will be deleted
+User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User); // one-direction is enough, this line isn't necessary
+Cart.belongsToMany(Product, { through: CartItem }); // tells sequelize where the connections will be stored.
+Product.belongsToMany(Cart, { through: CartItem });
+Order.belongsTo(User);
+User.hasMany(Order); // A user can have mny orders
+Order.belongsToMany(Product, { through: OrderItem });
 
-app.listen(3000);
+sequelize
+  //.sync({ force: true })
+  .sync()
+  .then((result) => {
+    //console.log(result);
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      return User.create({ name: "Ema", email: "emzpipi@gmail.com" });
+    }
+    return user;
+  })
+  .then((user) => {
+    return user.createCart();
+  })
+  .then((cart) => {
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log(err);
+  }); // sync our models with the db and creates a table for us
