@@ -9,12 +9,11 @@ const path = require("path");
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const app = express(); //calls the express function and now i can use it
-const Product = require("./models/product");
+//const Product = require("./models/product");
 const User = require("./models/user");
-
-const sequelize = require("./util/database");
 
 const productsController = require("./controllers/error");
 
@@ -24,19 +23,19 @@ app.set("views", "views");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
-const Cart = require("./models/cart");
-const CartItem = require("./models/cart-item");
-const Order = require("./models/order");
-const OrderItem = require("./models/order-item");
+// const Cart = require("./models/cart");
+// const CartItem = require("./models/cart-item");
+// const Order = require("./models/order");
+// const OrderItem = require("./models/order-item");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public"))); //using static method on express to get into the public folder and access files like css, images etc
 
 app.use((req, res, next) => {
-  // register middleware for upcoming requests
-  User.findByPk(1)
+  //register middleware for upcoming requests
+  User.findById("64d0a91bb571eec3ea1f4b1d")
     .then((user) => {
-      req.user = user; // storing a user in the req, add a new field to our existing request. the user is a sequelized obj with db methods
+      req.user = user; // storing a user in the req, add a new field to our existing request. the user is a mongoose model with mongoose methods
       next();
     })
     .catch((err) => console.log(err));
@@ -48,36 +47,24 @@ app.use(shopRoutes);
 
 app.use(productsController.get404);
 
-//creating an association, relating our models
-Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // A user created this product, (optional)ondeleting user any related pdt will be deleted
-User.hasMany(Product);
-User.hasOne(Cart);
-Cart.belongsTo(User); // one-direction is enough, this line isn't necessary
-Cart.belongsToMany(Product, { through: CartItem }); // tells sequelize where the connections will be stored.
-Product.belongsToMany(Cart, { through: CartItem });
-Order.belongsTo(User);
-User.hasMany(Order); // A user can have mny orders
-Order.belongsToMany(Product, { through: OrderItem });
-
-sequelize
-  //.sync({ force: true })
-  .sync()
+//mongoose connects to the db, no need of util fns to do so.
+mongoose
+  .connect(
+    "mongodb+srv://emzpipi:JW2t6jvLnXcNCbaT@cluster0.ragolna.mongodb.net/?retryWrites=true&w=majority"
+  )
   .then((result) => {
-    //console.log(result);
-    return User.findByPk(1);
-  })
-  .then((user) => {
-    if (!user) {
-      return User.create({ name: "Ema", email: "emzpipi@gmail.com" });
-    }
-    return user;
-  })
-  .then((user) => {
-    return user.createCart();
-  })
-  .then((cart) => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          name: "Ema",
+          email: "emzpipi@gmail.com",
+          cart: { items: [] },
+        });
+        user.save();
+      }
+    });
     app.listen(3000);
   })
   .catch((err) => {
     console.log(err);
-  }); // sync our models with the db and creates a table for us
+  });

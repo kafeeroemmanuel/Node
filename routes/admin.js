@@ -9,9 +9,11 @@ const adminController = require("../controllers/admin");
 //whenever a request reaches this route, the fn is fired and executes, //admin/add-product - GET
 router.get("/add-product", adminController.getAddProduct);
 
+//admin/product => POST
 router.get("/products", adminController.getProducts);
 
 //Another way of filtering for only get and post requests is by using the CRUD methods for that particular action.
+//admin/product => POST
 router.post("/add-product", adminController.postAddProduct);
 
 router.get("/edit-product/:productId", adminController.getEditProduct); // one needs the id of the pdt & info for editing the pdt

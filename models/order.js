@@ -1,16 +1,18 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-const sequelize = require("../util/database");
+const Schema = mongoose.Schema;
 
-// a Order(in-btn table btn user and many pdts)
-const Order = sequelize.define("order", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    allowNull: false,
-    primaryKey: true,
+const orderSchema = new Schema({
+  products: [
+    {
+      product: { type: Object, required: true },
+      quantity: { type: Number, required: true },
+    },
+  ],
+  user: {
+    name: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
   },
-  // cd have an address OF THE USER
 });
 
-module.exports = Order;
+module.exports = mongoose.model("Order", orderSchema);

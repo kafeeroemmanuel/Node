@@ -1,31 +1,102 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
 
-const sequelize = require("../util/database");
+const Schema = mongoose.Schema;
 
-// product is the model name
-const Product = sequelize.define("product", {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    allowNull: false,
-    primaryKey: true,
-  },
+const productSchema = new Schema({
   title: {
-    type: DataTypes.STRING,
-    allowNull: false,
+    type: String,
+    required: true,
   },
   price: {
-    type: DataTypes.DOUBLE,
-    allowNull: false,
+    type: Number,
+    required: true,
   },
-  imageUrl: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  description: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  description: { type: String, required: true },
+  imageUrl: { type: String, required: true },
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: "User", //sets up a relation btn pdt and user
+    required: true,
   },
 });
 
-module.exports = Product;
+module.exports = mongoose.model("Product", productSchema); // schema name used in db naming of collection
+
+// const mongodb = require("mongodb");
+// const getDb = require("../util/database").getDb;
+
+// class Product {
+//   constructor(title, price, description, imageUrl, id, userId) {
+//     this.title = title;
+//     this.price = price;
+//     this.description = description;
+//     this.imageUrl = imageUrl;
+//     this._id = id ? new mongodb.ObjectId(id) : null;
+//     this.userId = userId;
+//   }
+
+//   save() {
+//     // mongodb schema is Database, collection and then documents
+//     const db = getDb();
+//     let dbOp;
+//     if (this._id) {
+//       //update a product
+//       dbOp = db
+//         .collection("products")
+//         .updateOne({ _id: this._id }, { $set: this }); // or use a robust way of setting @key:value manually $set: title:this.title
+//     } else {
+//       dbOp = db.collection("products").insertOne(this);
+//     }
+//     return dbOp
+//       .then((result) => {
+//         console.log(result);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+
+//   static fetchAll() {
+//     const db = getDb();
+//     //find doesn't immed. return a promise but returns a cursor(mongodb obj that allows us to go thru our docs step by step)
+//     return db
+//       .collection("products") // tell mongodb which collection to pick from
+//       .find()
+//       .toArray()
+//       .then((products) => {
+//         console.log(products);
+//         return products;
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+
+//   static findById(prodId) {
+//     const db = getDb();
+//     return db
+//       .collection("products")
+//       .find({ _id: new mongodb.ObjectId(prodId) })
+//       .next()
+//       .then((product) => {
+//         console.log(product);
+//         return product;
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+
+//   static deleteById(prodId) {
+//     const db = getDb();
+//     return db
+//       .collection("products")
+//       .deleteOne({ _id: new mongodb.ObjectId(prodId) })
+//       .then((result) => {
+//         console.log("Deleted");
+//       })
+//       .catch((err) => console.log(err));
+//   }
+// }
+
+// module.exports = Product;
